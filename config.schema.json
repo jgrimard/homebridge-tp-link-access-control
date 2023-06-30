@@ -1,0 +1,59 @@
+{
+  "pluginAlias": "tp-link-access-control",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "Control network from devices connected to a TP Link router using the Home app",
+  "schema": {
+    "definitions": {
+      "devices_obj": {
+        "type": "object",
+        "title": "Device",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the device to control, this will show up in the Home app",
+            "default": "Device Name",
+            "required": true
+          },
+          "mac": {
+            "type": "string",
+            "title": "MAC Address",
+            "pattern": "^([0-9A-Fa-f]{2}[-]){5}([0-9A-Fa-f]{2})$",
+            "description": "MAC Address of the device to control",
+            "default": "00-00-00-00-00-00",
+            "required": true
+          }
+        }
+      }
+    },
+    "type": "object",
+    "title": "TP Link Access Control",
+    "description": "TP Link Access Control",
+    "properties": {
+      "ipAddress": {
+        "type": "string",
+        "title": "Router IP Address",
+        "description": "IP Address of the TP Link router",
+        "default": "192.168.1.1",
+        "required": true
+      },
+      "password": {
+        "type": "string",
+        "title": "Router Local Password",
+        "description": "Local Password of the TP Link router",
+        "default": "admin",
+        "required": true
+      },
+      "devices": {
+        "type": "array",
+        "title": "Devices",
+        "description": "List of devices to control",
+        "minItems": 1,
+        "items": {
+          "$ref": "#/definitions/devices_obj"
+        }
+      }
+    }
+  }
+}

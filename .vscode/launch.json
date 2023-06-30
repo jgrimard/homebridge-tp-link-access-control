@@ -1,0 +1,66 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Homebridge",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "preLaunchTask": "buildTask",
+            "program": "/usr/local/bin/homebridge",
+            "args": [
+                "-I",
+            ],
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Homebridge Debug",
+            "skipFiles": [
+                "<node_internals>/**",
+                "${workspaceFolder}/homebridge-tp-link-access-control/node_modules/**",
+                "/usr/local/lib/node_modules/homebridge/node_modules/**"
+            ],
+            "preLaunchTask": "buildTask",
+            "program": "/usr/local/bin/homebridge",
+            "args": [
+                "-ID"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Node.js - Debug Current File",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}",
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch tplinkApi",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "./homebridge-tp-link-access-control/dist/tplinkApi.js",
+            "args": [
+                ""
+            ],
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
+        }
+    ]
+}
