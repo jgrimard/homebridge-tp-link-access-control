@@ -6,6 +6,7 @@
 //
 //TODO: Test with wrong passowrd
 //TODO: Test with wrong ip address
+//TODO: Complete Readme file
 
 import * as crypto from 'crypto';
 import { Logger } from 'homebridge';
