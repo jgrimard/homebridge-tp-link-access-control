@@ -20,7 +20,7 @@
             "type": "string",
             "title": "MAC Address",
             "pattern": "^([0-9A-Fa-f]{2}[-]){5}([0-9A-Fa-f]{2})$",
-            "description": "MAC Address of the device to control",
+            "description": "MAC Address of the device to control.  Must use - instead of :",
             "default": "00-00-00-00-00-00",
             "required": true
           }
