@@ -1,5 +1,5 @@
 {
-  "private": true,
+  "private": false,
   "displayName": "TP-Link Access Control",
   "name": "homebridge-tp-link-access-control",
   "version": "1.0.0",
