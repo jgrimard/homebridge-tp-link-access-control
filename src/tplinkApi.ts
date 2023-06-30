@@ -4,7 +4,8 @@
 //Tested and working with Archer AX6000
 //Based on prior API work by Michal Chvila
 //
-//TODO: add delay to login method if login fails?  Otherwise it will keep trying to login
+//TODO: Test with wrong passowrd
+//TODO: Test with wrong ip address
 
 import * as crypto from 'crypto';
 import { Logger } from 'homebridge';
