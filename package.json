@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "description": "This plugin allows you to block specific devices from accessing the internet using your TP-Link router.",
   "license": "Apache-2.0",
+  "author": "Jason Grimard",
   "repository": {
     "type": "git",
     "url": "https://github.com/jgrimard/homebridge-tp-link-access-control.git"
@@ -48,6 +49,7 @@
     "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.21.0",
     "eslint": "^8.14.0",
+    "homebridge": "^1.3.5",
     "nodemon": "^2.0.20",
     "rimraf": "^3.0.2",
     "ts-node": "^10.7.0",
