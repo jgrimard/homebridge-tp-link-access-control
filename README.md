@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="./images/Homebridge%20TP-Link%20Logo.png" width="400">
+<img src="./images/Homebridge%20TP-Link%20Logo.png" width="450">
 </p>
 
 <span align="center">
@@ -72,7 +72,7 @@ Homebridge plugin to integrate TP-Link Access Control into HomeKit
       ]
   }
   ```
-  - Restart Homebridge, and the plugin should be ready to use.
+  - Restart Homebridge.
 
 
 
