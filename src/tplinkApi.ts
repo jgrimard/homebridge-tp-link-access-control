@@ -6,7 +6,12 @@
 //
 //TODO: Test with wrong passowrd
 //TODO: Test with wrong ip address
-//TODO: Complete Readme file
+//Example auth responses
+// On wrong password
+// {'errorcode': 'login failed', 'success': False, 'data': {'failureCount': 1, 'errorcode': '-5002', 'attemptsAllowed': 9}}
+// On exceeded max auth attempts (usually 10)
+// {'errorcode': 'exceeded max attempts', 'success': False, 'data': {'failureCount': 10, 'attemptsAllowed': 0}}
+//
 
 import * as crypto from 'crypto';
 import { Logger } from 'homebridge';
