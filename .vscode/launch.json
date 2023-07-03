@@ -25,7 +25,7 @@
             "skipFiles": [
                 "<node_internals>/**",
                 "${workspaceFolder}/homebridge-tp-link-access-control/node_modules/**",
-                "/usr/local/lib/node_modules/homebridge/node_modules/**"
+                "/usr/local/lib/node_modules/**"
             ],
             "preLaunchTask": "buildTask",
             "program": "/usr/local/bin/homebridge",

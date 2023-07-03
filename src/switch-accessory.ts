@@ -1,7 +1,3 @@
-//
-//TP-Link API by Jason Grimard 6/30/2023
-//Tested and working with Archer AX6000
-//
 import {
   AccessoryPlugin,
   HAP,

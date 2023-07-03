@@ -1,16 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 //
-//TP-Link API by Jason Grimard 6/30/2023
+//TP-Link API by Jason Grimard 2023
 //Tested and working with Archer AX6000
 //Based on prior API work by Michal Chvila
-//
-//TODO: Test with wrong passowrd
-//TODO: Test with wrong ip address
-//Example auth responses
-// On wrong password
-// {'errorcode': 'login failed', 'success': False, 'data': {'failureCount': 1, 'errorcode': '-5002', 'attemptsAllowed': 9}}
-// On exceeded max auth attempts (usually 10)
-// {'errorcode': 'exceeded max attempts', 'success': False, 'data': {'failureCount': 10, 'attemptsAllowed': 0}}
 //
 
 import * as crypto from 'crypto';
@@ -87,14 +79,14 @@ export default class TPLink {
       this.token = await this.login(encryptedPassword);
       // this.log.debug('Successfully connected to TPLink, token: ' + this.token);
     } catch (error) {
-      this.log.error('Error connecting to TPLink', error);
       this.loggingIn = false;
-      return Promise.reject('Error connecting to TPLink');
+      throw error;
     }
     this.loggingIn = false;
-    return Promise.resolve(true);
+    return true;
   }
 
+  // NOT CURRENTLY USED IN PLUGIN
   public async logout(): Promise<boolean> {
     const url = this.getURL('admin/system', 'logout');
     const data = {
@@ -110,6 +102,7 @@ export default class TPLink {
     }
   }
 
+  // NOT CURRENTLY USED IN PLUGIN
   // get list of connected devices that are available to block
   public async getConnectedDevices(): Promise<string[]> {
     const url = this.getURL('admin/access_control', 'black_devices');
@@ -126,10 +119,9 @@ export default class TPLink {
       } else {  // no connected devices return an empty array
         this.log.info('No connected devices found');
       }
-      return Promise.resolve(devices);
+      return devices;
     } else {
-      this.log.error('Error getting connected devices', response);
-      return Promise.reject('Error getting connected devices');
+      throw new Error('Error getting connected devices: ' + JSON.stringify(response));
     }
   }
 
@@ -147,12 +139,10 @@ export default class TPLink {
           this.log.debug(`Found blocked device named ${device.name} with mac address ${device.mac}`);
           devices.push(device.mac);
         }
-      } else {  // no blocked devices return an empty array
       }
-      return Promise.resolve(devices);
+      return devices;
     } else {
-      this.log.error('Error getting blocked devices', response);
-      return Promise.reject('Error getting blocked devices');
+      throw new Error('Error getting blocked devices: ' + JSON.stringify(response));
     }
   }
 
@@ -207,6 +197,7 @@ export default class TPLink {
     }
   }
 
+  // NOT CURRENTLY USED IN PLUGIN
   // get LED status
   public async getLEDStatus(): Promise<boolean> {
     const url = this.getURL('admin/ledgeneral', 'setting');
@@ -222,7 +213,7 @@ export default class TPLink {
     }
   }
 
-  // get Login Status (uses getLEDStatus to test)
+  // get Login Status (uses same as getLEDStatus to test)
   public async getLoggedInStatus(): Promise<boolean> {
     const url = this.getURL('admin/ledgeneral', 'setting');
     const data = {
@@ -236,6 +227,7 @@ export default class TPLink {
     }
   }
 
+  // NOT CURRENTLY USED IN PLUGIN
   // set LED status true = on, false = off
   // router only allows toggling, so we need to get the current status first
   public async setLEDStatus(status: boolean): Promise<boolean> {
@@ -263,25 +255,19 @@ export default class TPLink {
   // login to the router
   // return value: (stok token) token for authentication
   private async login(encryptedPassword: string, forceLogin = true): Promise<string> {  // need to decide if forceLogin is always wanted
-    try {
-      const url = this.getURL('login', 'login');
-      const data = {
-        'operation': 'login',
-        'password': encryptedPassword,
-      };
-      if (forceLogin) {
-        data['confirm'] = 'true';
-      }
-      const response = await this.request(url, data, true, true);
-      if (response.success === true) {
-        return response.data.stok;
-      } else {
-        this.log.error('Error logging in to TPLink', response);
-        return Promise.reject('Error logging in to TPLink');
-      }
-    } catch (error) {
-      this.log.error('Error logging in to TPLink', error);
-      return Promise.reject('Error logging in to TPLink');
+    const url = this.getURL('login', 'login');
+    const data = {
+      'operation': 'login',
+      'password': encryptedPassword,
+    };
+    if (forceLogin) {
+      data['confirm'] = 'true';
+    }
+    const response = await this.request(url, data, true, true);
+    if (response.success === true) {
+      return response.data.stok;
+    } else {
+      throw new Error(`Login Error (Probably wrong password): ${JSON.stringify(response.data)}`);
     }
   }
 
@@ -331,14 +317,12 @@ export default class TPLink {
       body: bodyParams,
       headers: this.HEADERS,
     });
-    // const responseStatus = response.status;
-    // const responseStatusText = response.statusText;
-    const responseText = await response.text();
+    const responseText = await response.text(); //need text first incase response is not JSON, since we can only use once.
     let responseData;
     try { // try to parse json
       responseData = JSON.parse(responseText);
-    } catch (e) { // if it fails, create a json object with the responseText in data
-      this.log.debug('The response is not json, we will create a json object with the responseText in data');
+    } catch (error) { // if JSON.parse fails, create a json object with the responseText in data
+      this.log.debug('The response is not json, we will create an object with the responseText in data:');
       responseData = {data: responseText};
     }
     const responseCookies = response.headers.raw()['set-cookie'];
@@ -353,24 +337,19 @@ export default class TPLink {
       }
     }
     if (encrypt) { // decrypt the response
-      try {
-        // decode base64 string from response
-        const encryptedResponseData = forge.util.decode64(responseData.data);
-        // decrypt the response using our AES key
-        const aesDecryptor = forge.cipher.createDecipher('AES-CBC', this.aesKey[0]);
-        aesDecryptor.start({iv: this.aesKey[1]});
-        aesDecryptor.update(forge.util.createBuffer(encryptedResponseData));
-        aesDecryptor.finish();
-        const responseStr = aesDecryptor.output.toString();
-        try { // try to parse the response as json
-          return JSON.parse(responseStr);
-        } catch (error) { // if it fails, return the response as an object with data
-          this.log.debug('Response is not json, returning as an object with data');
-          return {data: responseStr};
-        }
-      } catch (error) {
-        this.log.error('Error parsing response', error);
-        return Promise.reject('Error parsing response');
+      // decode base64 string from response
+      const encryptedResponseData = forge.util.decode64(responseData.data);
+      // decrypt the response using our AES key
+      const aesDecryptor = forge.cipher.createDecipher('AES-CBC', this.aesKey[0]);
+      aesDecryptor.start({iv: this.aesKey[1]});
+      aesDecryptor.update(forge.util.createBuffer(encryptedResponseData));
+      aesDecryptor.finish();
+      const responseStr = aesDecryptor.output.toString();
+      try { // try to parse the response as json
+        return JSON.parse(responseStr);
+      } catch (error) { // if it fails, return the response as an object with data
+        this.log.debug('Response is not json, returning as an object with data:');
+        return {data: responseStr};
       }
     } else { // not encrypted, just return the responseData
       return responseData;
@@ -389,45 +368,33 @@ export default class TPLink {
   // get the public rsa key from the router
   // return value: (n, e) RSA public key for encrypting the password as array of two strings
   private async getRSAPublicKeyPassword(): Promise<string[]> {
-    try {
-      const url = this.getURL('login', 'keys');
-      const data = {
-        'operation': 'read',
-      };
-      const response = await this.request(url, data);
-      if (response.success === true) {
-        return Promise.resolve(response.data.password);
-      } else {
-        this.log.error('Error getting RSA public key for signature from TPLink', response);
-        return Promise.reject('Error getting RSA public key for signature from TPLink');
-      }
-    } catch (error) {
-      this.log.error('Error getting RSA public key for signature from TPLink', error);
-      return Promise.reject('Error getting RSA public key for signature from TPLink');
+    const url = this.getURL('login', 'keys');
+    const data = {
+      'operation': 'read',
+    };
+    const response = await this.request(url, data);
+    if (response.success === true) {
+      return response.data.password;
+    } else {
+      throw new Error('Error getting RSA public key for password from TPLink: ' + JSON.stringify(response));
     }
   }
 
   // get the public rsa key from the router
   // return value: (n, e, seq) RSA public key for encrypting the signature
   private async getRSAPublicKeyAuth(): Promise<string[]> {
-    try {
-      const url = this.getURL('login', 'auth');
-      const data = {
-        'operation': 'read',
-      };
-      const response = await this.request(url, data);
-      if (response.success === true) {
-        const authPublicKey = response.data.key;
-        authPublicKey.push(response.data.seq.toString());
-        // this.log.debug('Successfully got RSA public key for signature from TPLink', authPublicKey);
-        return authPublicKey;
-      } else {
-        this.log.error('Error getting RSA public key for signature from TPLink', response);
-        return Promise.reject('Error getting RSA public key for signature from TPLink');
-      }
-    } catch (error) {
-      this.log.error('Error getting RSA public key for signature from TPLink', error);
-      return Promise.reject('Error getting RSA public key for signature from TPLink');
+    const url = this.getURL('login', 'auth');
+    const data = {
+      'operation': 'read',
+    };
+    const response = await this.request(url, data);
+    if (response.success === true) {
+      const authPublicKey = response.data.key;
+      authPublicKey.push(response.data.seq.toString());
+      // this.log.debug('Successfully got RSA public key for signature from TPLink', authPublicKey);
+      return authPublicKey;
+    } else {
+      throw new Error('Error getting RSA public key for Auth from TPLink: ' + JSON.stringify(response));
     }
   }
 
