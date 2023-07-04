@@ -9,6 +9,7 @@ import * as crypto from 'crypto';
 import { Logger } from 'homebridge';
 import forge from 'node-forge';
 import fetch from 'node-fetch';
+import { AbortSignal } from 'node-fetch/externals';
 
 export default class TPLink {
   private HEADERS = { //default headers for all requests
@@ -254,7 +255,7 @@ export default class TPLink {
 
   // login to the router
   // return value: (stok token) token for authentication
-  private async login(encryptedPassword: string, forceLogin = true): Promise<string> {  // need to decide if forceLogin is always wanted
+  private async login(encryptedPassword: string, forceLogin = true): Promise<string> {
     const url = this.getURL('login', 'login');
     const data = {
       'operation': 'login',
@@ -311,13 +312,31 @@ export default class TPLink {
       }
       tempHeaders['Cookie'] = cookieStr;
     }
+    // setup abortcontroller to limit fetch requests to 5 seconds
+    const timeoutTime = 5000;
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), timeoutTime);
     // send request
-    const response = await fetch(url, {
-      method: 'post',
-      body: bodyParams,
-      headers: this.HEADERS,
-    });
-    const responseText = await response.text(); //need text first incase response is not JSON, since we can only use once.
+    let responseText = '';
+    let response: any;
+    try {
+      response = await fetch(url, {
+        method: 'post',
+        body: bodyParams,
+        headers: this.HEADERS,
+        signal: abortController.signal as AbortSignal,
+      });
+      responseText = await response.text(); //need text first incase response is not JSON, since we can only use once.
+      clearTimeout(timeoutId); // clear timeout after receiving response
+    } catch(error: any) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timed out, verify IP address of router.');
+      } else if (error.code === 'EHOSTUNREACH') {
+        throw new Error('Verify the IP address of your router. ' + error.message);
+      } else {
+        throw error;
+      }
+    }
     let responseData;
     try { // try to parse json
       responseData = JSON.parse(responseText);
