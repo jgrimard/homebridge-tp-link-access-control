@@ -9,6 +9,7 @@
 
 Homebridge plugin to integrate TP-Link Access Control into HomeKit
 
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![npm](https://img.shields.io/npm/v/homebridge-tp-link-access-control/latest?label=latest)](https://www.npmjs.com/package/homebridge-tp-link-access-control)
 [![npm](https://img.shields.io/npm/dt/homebridge-tp-link-access-control)](https://www.npmjs.com/package/homebridge-tp-link-access-control)
 ![GitHub issues](https://img.shields.io/github/issues/jgrimard/homebridge-tp-link-access-control)
