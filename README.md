@@ -43,7 +43,7 @@ Homebridge plugin to integrate TP-Link Access Control into HomeKit
     - Local Password for the router
   - Add Devices to control
     - Name: Name of the device to be displayed in HomeKit
-    - MAC Address: MAC address of the device to be controlled (use - as separator)
+    - MAC Address: MAC address of the device to be controlled (use - or : as separator)
     - Click `Add Device` to add additional devices to the list
   - Click `Save` to save the settings
   - Restart Homebridge
@@ -55,12 +55,13 @@ Homebridge plugin to integrate TP-Link Access Control into HomeKit
   ```json
   {
       "platform": "tp-link-access-control",
+      "name": "TP Link",
       "ipAddress": "192.168.1.1",
       "password": "my-secret-password",
       "devices": [
           {
               "name": "Kid's Tablet",
-              "mac": "70-2E-BC-DA-44-8B"
+              "mac": "70:2E:BC:DA:44:8B"
           },
           {
               "name": "Son's iPad",
