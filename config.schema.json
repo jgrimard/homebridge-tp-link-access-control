@@ -2,7 +2,7 @@
   "pluginAlias": "tp-link-access-control",
   "pluginType": "platform",
   "singular": true,
-  "headerDisplay": "Control network from devices connected to a TP Link router using the Home app",
+  "headerDisplay": "<p align=\"center\"><img width=\"50%\" src=\"https://raw.githubusercontent.com/jgrimard/homebridge-tp-link-access-control/main/images/Homebridge%20TP-Link%20Logo.png\"></p><p align=\"center\">For help and support please visit the <a href=\"https://github.com/jgrimard/homebridge-tp-link-access-control\">GitHub Project Page</a>.</p>",
   "schema": {
     "definitions": {
       "devices_obj": {
@@ -13,15 +13,15 @@
             "type": "string",
             "title": "Name",
             "description": "Name of the device to control, this will show up in the Home app",
-            "default": "Device Name",
+            "placeholder": "Device Name",
             "required": true
           },
           "mac": {
             "type": "string",
             "title": "MAC Address",
-            "pattern": "^([0-9A-Fa-f]{2}[-]){5}([0-9A-Fa-f]{2})$",
-            "description": "MAC Address of the device to control.  Must use - instead of :",
-            "default": "00-00-00-00-00-00",
+            "pattern": "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$",
+            "description": "MAC Address of the device to control",
+            "placeholder": "00:00:00:00:00:00",
             "required": true
           }
         }
@@ -31,6 +31,14 @@
     "title": "TP Link Access Control",
     "description": "TP Link Access Control",
     "properties": {
+      "name": {
+        "type": "string",
+        "title": "Plugin Name",
+        "description": "Plugin name as displayed in the Homebridge log",
+        "default": "TP Link Access Control",
+        "minLength": 1,
+        "required": true
+      },
       "ipAddress": {
         "type": "string",
         "title": "Router IP Address",

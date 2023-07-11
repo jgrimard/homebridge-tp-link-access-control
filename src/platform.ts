@@ -11,6 +11,7 @@ import TPLink from './tplinkApi';
 export class TPLinkAccessControlPlatform implements StaticPlatformPlugin {
   public readonly tplink: TPLink;
   private connected = false;
+  public name = '';
 
   constructor(
     public readonly log: Logging,
@@ -18,6 +19,9 @@ export class TPLinkAccessControlPlatform implements StaticPlatformPlugin {
     public readonly api: API,
   ) {
     this.tplink = new TPLink(this.config.ipAddress, this.config.password, this.log);
+    if (this.config) {
+      this.name = this.config.name || this.name;
+    }
   }
 
   // initialize the connection to the TP Link router

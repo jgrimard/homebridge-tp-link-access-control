@@ -27,7 +27,7 @@ export class TPLinkDevice implements AccessoryPlugin {
     this.hap = platform.api.hap;
     this.log = log;
     this.name = name;
-    this.macAddress = macAddress;
+    this.macAddress = this.convertMacAddress(macAddress);
     this.tpLink = this.platform.tplink;
     this.switchService = new this.hap.Service.Switch(name);
     this.switchService.getCharacteristic(this.hap.Characteristic.On)
@@ -84,6 +84,12 @@ export class TPLinkDevice implements AccessoryPlugin {
       .setCharacteristic(this.hap.Characteristic.Model, 'TP-Link Router')
       .setCharacteristic(this.hap.Characteristic.SerialNumber, this.macAddress);
     this.log.debug('Device \'%s\' created!', name);
+  }
+
+  // convert the mac address to the format used by the router
+  // e.g. 00:11:22:33:44:55 -> 00-11-22-33-44-55
+  convertMacAddress(macAddress: string): string {
+    return macAddress.replace(/:/g, '-');
   }
 
   /*
