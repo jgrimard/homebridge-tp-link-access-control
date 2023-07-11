@@ -7,7 +7,7 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-             # in vscode turn on setting - git: follow tags when sync
+             # in vscode turn on setting - git: follow tags when sync.
              # Create tag in source control or terminal with git tag -a v1.0.5 -m "Release v1.0.5"
 
 jobs:
