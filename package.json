@@ -2,7 +2,7 @@
   "private": false,
   "displayName": "TP-Link Access Control",
   "name": "homebridge-tp-link-access-control",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "This plugin allows you to block specific devices from accessing the internet using your TP-Link router.",
   "license": "Apache-2.0",
   "author": "Jason Grimard",
