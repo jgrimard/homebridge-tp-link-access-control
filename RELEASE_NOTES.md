@@ -1,5 +1,9 @@
 # Release Notes
 
+## Version v1.0.6
+
+- None, testing automated release process.
+
 ## Version v1.0.5
 
 - None, testing automated release process.
